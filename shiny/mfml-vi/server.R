@@ -5,44 +5,68 @@ library(markdown)
 library(DT)
 library(plotly)
 
+set_wd <- function() {
+  library(rstudioapi) # make sure you have it installed
+  current_path <- getActiveDocumentContext()$path 
+  setwd(dirname(current_path ))
+  print( getwd() )
+}
+set_wd()
 
-results <- data.frame(x = 1:100, y = rnorm(100))
-importance <- data.frame(method = c("rf", "rf", "shap", "shap"),
-                         var = c("a", "b", "a", "b"),
-                         imp = c(1, 2, 1, 1))
-perf <- data.frame(method = c("rf", "rf", "rf", "shap", "shap", "shap"),
-                         k = c(1,2,3,1,2,3),
-                         error = c(.5, .25, .1, .4, .3, .09))
+results <- read.csv("../../results/clf_results_full.csv")
+importance <- read.csv("../../results/clf_vi.csv")
+importance_melt <- importance %>% melt(id = "variable", variable.name = "method")
+clf_metric_names <- names(results %>% select(-model,	-method, -k))
 
-methods <- as.vector(importance$method %>% unique())
-print(methods)
+
+methods <- as.vector(results$method %>% unique())
+variables <- as.vector(importance$variable %>% unique())
+models <- as.vector(results$model %>% unique())
+
 server <- function(input, output, session) {
   ## update UI
-  updateSelectInput(session, "method", "Method", choices = methods)
+  updateSliderInput(session, "n", "Number of Variables", min = 1, 
+                    max = length(variables), value = 5, step = 1)
   updateSelectInput(session, "method1", "Choose Method (1)", choices = methods)
   updateSelectInput(session, "method2", "Choose Method (2)", choices = methods)
+  updateSelectInput(session, "metric", "Choose Metric", choices = clf_metric_names)
+  updateSelectInput(session, "model", "Choose Model", choices = models)
   
-  get.vi <- reactive({
+  get.results <- reactive({
+                  m <- input$metric
+                  mod <- input$model
+                  data <- results %>% filter(model == mod) %>% 
+                                      group_by(k, method) %>% 
+                                      summarise(Mean = mean(get(input$metric), na.rm=T))
+                  return(data.frame(data))
+                  })
+  
+  get.vi.1 <- reactive({
                     # get vi for given method
                     n_vars <- input$n
-                    method_ <- input$method1
-                    data <- importance %>% 
-                            filter(method == method_) %>% 
-                            arrange(-imp) %>% head(n_vars)
-                    print(data)
+                    method_1 <- input$method1
+                    data <- importance_melt %>% 
+                            filter(method == method_1) %>% 
+                            arrange(-value) %>% head(n_vars)
                     return (data)
                   })
   
   get.vi.2 <- reactive({
                     # get vi for given method
                     n_vars <- input$n
-                    method_ <- input$method2
-                    data <- importance %>% 
-                      filter(method == method_) %>% 
-                      arrange(-imp) %>% head(n_vars)
-                    print(data)
+                    method_2 <- input$method2
+                    data <- importance_melt %>% 
+                      filter(method == method_2) %>% 
+                      arrange(-value) %>% head(n_vars)
                     return (data)
                   })
+  ## Vis.
+  output$plot_perf <- renderPlotly({
+                      get.results() %>% plot_ly(x = ~k,
+                                                y = ~Mean,
+                                                color = ~method,
+                                                mode = 'markers+lines')
+                    })
   
   output$vi_plot <- renderPlotly({
     
@@ -59,10 +83,10 @@ server <- function(input, output, session) {
                 )
               }
               
-              plot1 <- get.vi() %>% 
-                    arrange(imp) %>% 
-                plot_ly(x = ~imp, 
-                        y = ~reorder(var, imp), 
+              plot1 <- get.vi.1() %>% 
+                    arrange(value) %>% 
+                plot_ly(x = ~value, 
+                        y = ~reorder(variable, value), 
                         type = 'bar', 
                         orientation = 'h',
                         opacity = .75,
@@ -78,9 +102,9 @@ server <- function(input, output, session) {
                        )
             
               plot2 <- get.vi.2() %>% 
-                arrange(imp) %>% 
-                plot_ly(x = ~imp, 
-                        y = ~reorder(var, imp), 
+                arrange(value) %>% 
+                plot_ly(x = ~value, 
+                        y = ~reorder(variable, value), 
                         type = 'bar', 
                         orientation = 'h',
                         opacity = .75,
@@ -96,12 +120,7 @@ server <- function(input, output, session) {
                 )
               subplot(plot1, plot2)
             })  
-  output$plot_perf <- renderPlotly({
-               perf %>% plot_ly(x = ~k,
-                                y = ~error,
-                                color = ~method,
-                                mode = 'lines+markers')
-  })
-  # table
-  output$table <- renderDataTable(get.vi())
+
+  ## table
+  output$table <- renderDataTable(get.results() %>% arrange(method, k))
 }

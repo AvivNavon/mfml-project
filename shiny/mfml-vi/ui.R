@@ -24,38 +24,42 @@ ui <- fluidPage(
   hr(),
   wellPanel(
     fluidRow(
-      column(2, 
-             h3("Switch Plot"),
-             radioButtons("plot", "Choose plot",
-                          choices = c("Fit", "Error"),
-                          selected = "Fit", 
+      column(3, 
+             h3("Performance Plot"),
+             radioButtons("task", "Choose Task",
+                          choices = c("Regression", "Classification"),
+                          selected = "Regression", 
                           inline = TRUE)
+            ),
+      column(2, h3("---"),
+             selectInput("metric", "Choose Metric", choices = c(""))
+             ),
+      column(2, h3("---"),
+             selectInput("model", "Choose Model", choices = c(""))
       ),
-      column(2, 
-             h3("Fit Plots"),
-             sliderInput('n',
-                          label = '# Vars.',
-                          min = 1, 
-                          max = 10,
-                          value = 5)
-      ),
-      column(2,
-             h3(" --- "),
-             selectInput("method", "Method", choices = c("rf", "shap"), selected = "rf")
-      ),
-      column(2, offset = 2,
+      column(2, offset = 1,
              h3("Compare VI"),
              selectInput("method1", "Choose Method (1)", choices = c("")),
              selectInput("method2", "Choose Method (2)", choices = c(""))
+      ),
+      column(2, 
+             h3("---"),
+             sliderInput('n',
+                         label = 'Number of Variables',
+                         min = 1, 
+                         max = 10,
+                         value = 5, 
+                         step = 1)
       )
     ),
     hr(),
     helpText(HTML(markdownToHTML(fragment.only = TRUE,
-                                 text = c(""
-                                 ))))
-    ,
+                                 text = c("")
+                                 )
+                  )
+             ),
     helpText(HTML(markdownToHTML(fragment.only = TRUE,
- text = c(
+            text = c(
 "
 <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
 <span style='color:#d12525'> **<i class = 'fa fa-heart-o'></i>** </span>
