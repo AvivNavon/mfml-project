@@ -20,7 +20,7 @@ We will also get to test two new projects for ML models interpretability:
 
 We also build a simple web app, using Shiny for easier evaluation of the experiment results. The app is available on shinyapps.io, using [this](https://avivnav.shinyapps.io/mfml-vi/) link.
 
-![](mfml-app.png)
+![](shiny/mfml-app.png)
 
 ## Reference 
 
