@@ -13,8 +13,7 @@ We will compare the results of several feature importance method using 5-fold CV
 
 We will also get to test two new projects for ML models interpretability: 
 
-  - [SHAP](https://github.com/slundberg/shap) (SHapley Additive exPlanations) project. SHAP is a unified approach to explain the output of any machine learning model.
-  
+  - [SHAP](https://github.com/slundberg/shap) (SHapley Additive exPlanations): SHAP is a unified approach to explain the output of any machine learning model.
   - [Skater](https://github.com/datascienceinc/Skater): Skater is a unified framework to enable Model Interpretation. We will specifically be use Skater to estimate permutation based VI. 
 	
 ## UI
