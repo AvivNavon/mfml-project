@@ -20,6 +20,8 @@ We will also get to test two new projects for ML models interpretability:
 
 We also build a simple web app, using Shiny for easier evaluation of the experiment results. The app is available on shinyapps.io, using [this](https://avivnav.shinyapps.io/mfml-vi/) link.
 
+![](mfml-app.png)
+
 ## Reference 
 
 <a name="[1]">[1]</a>[ O. Elisha and S. Dekel, Wavelet decompositions of Random Forests - smoothness analysis, sparse
