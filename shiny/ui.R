@@ -18,8 +18,34 @@ ui <- fluidPage(
   navbarPage(
     "MFML - Variable Importance",
     tabPanel("Performance", icon = icon("line-chart"),
-             div(plotlyOutput("plot_perf", height = "400px", width = "1400px"),
+             fluidRow(
+               conditionalPanel(
+                 condition = "input.task == 'reg'", 
+helpText(HTML(markdownToHTML(fragment.only = TRUE,
+                             text = c(
+"
+## Regression Task - Abalone Data
+"
+                     )
+                     )
+                  ))),
+               conditionalPanel(
+                 condition = "input.task == 'clf'", 
+                 helpText(HTML(markdownToHTML(fragment.only = TRUE,
+                                              text = c(
+"
+## Classification Task - Human Activity Recognition
+"
+                    )
+                    )
+                    ))
+                 ),
+               hr(),
+               div(
+                 plotlyOutput("plot_perf", height = "400px", width = "1400px"),
+                 
                  align = "center")
+             )
              ),
     tabPanel("VI", icon = icon("star-o"),
              div(plotlyOutput("vi_plot", height = "400px", width = "1400px"), 
