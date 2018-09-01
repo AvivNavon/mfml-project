@@ -1,6 +1,6 @@
 # MFML - Final Project
 
-Final project for the course Mathematical Foundation of Machine Learning (Spring 2018).
+Final project for the course Mathematical Foundation of Machine Learning (Spring 2018). For an HTML view of the notebook, use [this link](https://rawgit.com/AvivNavon/mfml-project/master/mfml-vi.html).
 
 ## Feature importance via wavelet decomposition of RF
 
